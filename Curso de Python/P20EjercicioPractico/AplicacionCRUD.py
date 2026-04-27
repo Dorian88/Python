@@ -40,15 +40,65 @@ def crear():
     miConexion = sqlite3.connect("Usuarios")
     miCursor = miConexion.cursor()
 
-    miCursor.execute("INSERT INTO DATOSUSUARIOS VALUES (NULL, '" + miNombre.get() +
+    datos = miNombre.get(), miPass.get(), miApellido.get(), miDireccion.get(), textoComentario.get("1.0", END)
+
+    """miCursor.execute("INSERT INTO DATOSUSUARIOS VALUES (NULL, '" + miNombre.get() +
                      "','" + miPass.get() + "','" + miApellido.get() + "','" + miDireccion.get()
-                     + "','" +  textoComentario.get("1.0", END) + "')")
+                     + "','" +  textoComentario.get("1.0", END) + "')")"""
+
+    miCursor.execute("INSERT INTO DATOSUSUARIOS VALUES (NULL, ?, ?, ?, ?, ?)", (datos))
 
     miConexion.commit()
 
     messagebox.showinfo("BBDD", "Registro insertado con éxito")
 
+def leer():
+    miConexion = sqlite3.connect("Usuarios")
+    miCursor = miConexion.cursor()
 
+    miCursor.execute("SELECT * FROM DATOSUSUARIOS WHERE ID = " + miID.get())
+
+    elUsuario = miCursor.fetchall()
+
+    for usuario in elUsuario:
+        miID.set(usuario[0])
+        miNombre.set(usuario[1])
+        miPass.set(usuario[2])
+        miApellido.set(usuario[3])
+        miDireccion.set(usuario[4])
+        textoComentario.insert(1.0, usuario[5])
+
+    miConexion.commit()
+
+def actualizar():
+    miConexion = sqlite3.connect("Usuarios")
+    miCursor = miConexion.cursor()
+
+    datos = miNombre.get(), miPass.get(), miApellido.get(), miDireccion.get(), textoComentario.get("1.0", END)
+
+    """miCursor.execute("UPDATE DATOSUSUARIOS SET NOMBRE = '" + miNombre.get()
+                     + "', PASSWORD = '" + miPass.get()
+                     + "', APELLIDO = '" + miApellido.get()
+                     + "', DIRECCION = '" + miDireccion.get()
+                     + "', COMENTARIOS = '" + textoComentario.get(1.0, END)
+                     +"' WHERE ID =" + miID.get())"""
+
+    miCursor.execute("UPDATE DATOSUSUARIOS SET NOMBRE = ?, PASSWORD = ?, APELLIDO = ?, DIRECCION = ?, COMENTARIOS = ?"
+                     + "WHERE ID = " + miID.get(), (datos))
+
+    miConexion.commit()
+
+    messagebox.showinfo("BBDD", "Registro actualizado con éxito")
+
+def eliminar():
+    miConexion = sqlite3.connect("Usuarios")
+    miCursor = miConexion.cursor()
+
+    miCursor.execute("DELETE FROM DATOSUSUARIOS WHERE ID = " + miID.get())
+
+    miConexion.commit()
+
+    messagebox.showinfo("BBDD", "Registro ha sido eliminado con éxito")
 
 raiz = Tk()
 
@@ -68,9 +118,9 @@ borrarMenu.add_command(label = "Borrar Campos", command = limpiarCampos)
 
 crudMenu = Menu(barraMenu, tearoff = 0)
 crudMenu.add_command(label = "Crear", command = crear)
-crudMenu.add_command(label = "Leer")
-crudMenu.add_command(label = "Actualizar")
-crudMenu.add_command(label = "Borrar")
+crudMenu.add_command(label = "Leer", command = leer)
+crudMenu.add_command(label = "Actualizar",  command = actualizar)
+crudMenu.add_command(label = "Borrar", command = eliminar)
 
 ayudaMenu = Menu(barraMenu, tearoff = 0)
 ayudaMenu.add_command(label = "Licencia")
@@ -129,11 +179,11 @@ miFrame2.pack()
 
 botonCrear = Button(miFrame2, text = "Crear", command = crear)
 botonCrear.grid(row = 1, column = 0, sticky = "e", padx = 10, pady = 10)
-botonLeer = Button(miFrame2, text = "Leer")
+botonLeer = Button(miFrame2, text = "Leer", command = leer)
 botonLeer.grid(row = 1, column = 1, sticky = "e", padx = 10, pady = 10)
-botonActualizar = Button(miFrame2, text = "Actualizar")
+botonActualizar = Button(miFrame2, text = "Actualizar",  command = actualizar)
 botonActualizar.grid(row = 1, column = 2, sticky = "e", padx = 10, pady = 10)
-botonBorrar = Button(miFrame2, text = "Borrar")
+botonBorrar = Button(miFrame2, text = "Borrar", command = eliminar)
 botonBorrar.grid(row = 1, column = 3, sticky = "e", padx = 10, pady = 10)
 
 
